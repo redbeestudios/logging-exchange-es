@@ -20,6 +20,19 @@ cd feorex-ms
 ./gradlew quarkusDev
 ```
 
+### docker-compose
+
+Para levantar todo el sistema incluído elastic stack:
+```
+docker-compose build --parallel
+docker-compose up -d
+```
+
+Para detener todos los containers 
+```
+docker-compose down -v
+```
+
 ## Ejercicio
 
 La idea es que jueguen un poco con la api (exchange-bff - forex-ms) y que identifiquen aquellos lugares dónde tiene sentido agregar logs, atendiendo al nivel y a los elementos imprescindibles que se necesitan para su clara comprensión.
