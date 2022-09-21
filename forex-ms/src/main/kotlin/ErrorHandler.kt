@@ -8,15 +8,15 @@ class ErrorHandler : ExceptionMapper<Exception> {
 
     override fun toResponse(exception: Exception): Response =
         when (exception) {
-            is BadRequestException -> badRequest(exception)
-            else -> internalError(exception)
+            is NotFoundException -> notFoundResponse(exception)
+            else -> internalErrorResponse(exception)
         }
 
-    private fun internalError(exception: Exception): Response = Response.status(Status.NOT_FOUND)
+    private fun internalErrorResponse(exception: Exception): Response = Response.status(Status.NOT_FOUND)
         .entity(ErrorResponse(Status.INTERNAL_SERVER_ERROR.statusCode, exception.message ?: "Internal error"))
         .build()
 
-    private fun badRequest(exception: BadRequestException): Response = Response.status(Status.NOT_FOUND)
+    private fun notFoundResponse(exception: NotFoundException): Response = Response.status(Status.NOT_FOUND)
         .entity(ErrorResponse(Status.NOT_FOUND.statusCode, exception.message ?: "Not found"))
         .build()
 
