@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CurrencyController } from './currency/currency.controller';
@@ -15,7 +15,8 @@ import { WalletService } from './wallet/wallet.service';
     AppService,
     CurrencyService,
     WalletRepository,
-    WalletService
+    WalletService,
+    Logger
   ],
 })
 export class AppModule { }

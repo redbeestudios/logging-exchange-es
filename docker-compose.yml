@@ -67,6 +67,7 @@ services:
       retries: 120
 
   elastic:
+    hostname: elastic
     depends_on:
       setup:
         condition: service_healthy
