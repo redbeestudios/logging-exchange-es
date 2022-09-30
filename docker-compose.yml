@@ -8,6 +8,8 @@ services:
         context: exchange-bff/
       ports:
         - "3000:3000"
+      networks:
+      - elk
 
   forex-ms:
     hostname: forex-ms
@@ -16,6 +18,8 @@ services:
       context: forex-ms/
     ports:
       - "8080:8080"
+    networks:
+      - elk
 
   setup:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
@@ -65,6 +69,8 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
+    networks:
+      - elk
 
   elastic:
     hostname: elastic
@@ -78,10 +84,10 @@ services:
     ports:
       - ${ES_PORT}:9200
     environment:
-      - node.name=elastic
       - cluster.name=${CLUSTER_NAME}
-      - cluster.initial_master_nodes=elastic
+      - discovery.type=single-node
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - network.host=0.0.0.0
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -95,6 +101,7 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
+      - xpack.monitoring.collection.enabled=true
     mem_limit: ${MEM_LIMIT}
     ulimits:
       memlock:
@@ -109,6 +116,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    networks:
+        - elk
 
   logstash:
     hostname: logstash
@@ -117,14 +126,10 @@ services:
       args:
         ELK_VERSION: $STACK_VERSION
     volumes:
-      - type: bind
-        source: ./logstash/config/logstash.yml
-        target: /usr/share/logstash/config/logstash.yml
-        read_only: true
-      - type: bind
-        source: ./logstash/pipeline
-        target: /usr/share/logstash/pipeline
-        read_only: true
+      - certs:/usr/share/logstash/config/certs
+      - logstashdata:/usr/share/logstash/data
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
     ports:
       - "5000:5000/tcp"
       - "5044:5044/tcp"
@@ -135,6 +140,8 @@ services:
     depends_on:
       elastic:
         condition: service_healthy
+    networks:
+      - elk
 
   filebeat:
     build:
@@ -149,6 +156,8 @@ services:
     depends_on:
       elastic:
         condition: service_healthy
+    networks:
+      - elk
 
   kibana:
     depends_on:
@@ -163,7 +172,7 @@ services:
     environment:
       - SERVERNAME=kibana
       - ELASTICSEARCH_HOSTS=https://elastic:9200
-      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_USERNAME=${KIBANA_USER}
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
     mem_limit: ${MEM_LIMIT}
@@ -176,6 +185,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    networks:
+      - elk
 
 volumes:
   certs:
@@ -184,3 +195,8 @@ volumes:
     driver: local
   kibanadata:
     driver: local
+  logstashdata:
+    driver: local
+
+networks:
+  elk:

@@ -1,23 +1,24 @@
+import org.jboss.logging.Logger
 import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class ExchangeRepository {
+class ExchangeRepository(
+    val logger: Logger
+) {
 
     suspend fun getCurrencies(from: String, to: String): ExchangePrice {
-        val base = currencies
-            .find { it.symbol == from }
-            ?: throw NotFoundException("Currency not found $from")
-
-        val target = currencies
-            .find { it.symbol == to }
-            ?: throw NotFoundException("Currency not found $to")
-
-        return ExchangePrice(base.symbol, target.symbol,
-            base.value.divide(target.value, 2, RoundingMode.HALF_UP))
+        this.logger.info("Looking base currency")
+        val base = findCurrency(from)
+            .also { this.logger.info("Base currency was found: $it") }
+        val target = findCurrency(to)
+            .also { this.logger.info("Target currency was found: $it") }
+        return ExchangePrice(base, target)
+            .also { this.logger.info("Exchange price $it") }
     }
+
+    fun findCurrency(symbol: String) = currencies.find { it.symbol == symbol }
+        ?: throw NotFoundException("Currency not found $symbol")
 
     companion object {
 
