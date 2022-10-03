@@ -1,5 +1,13 @@
 # Workshop de observavilidad.
 
+## Precondiciones
+
+* [NPM](https://github.com/nvm-sh/nvm)
+* [JDK](https://sdkman.io/)
+* [Docker-compose](https://docs.docker.com/compose/install/)
+
+
+
 ## Intrucciones para levantar los servicios.
 
 ### exchange-bff
@@ -33,19 +41,15 @@ Para detener todos los containers
 docker-compose down -v
 ```
 
-## Ejercicio
+## Misión
 
-Tenemos este sistema legacy, que heredamos de un antiguo cliente, que pretendía lanzar una billetera de criptomonedas.
+Tenemos un sistema que en teoría nos permitiría conocer el balance de nuestra billetera electrónica, convertir de una moneda a otra (BTC, ETH, USD, LTC, BEE, ADA) y realizar un movimiento dentro la misma billetera (BTC -> ETH, USD -> ETH, etc):
 
-Dicho sistema consta de dos componentes, el exchange-bff, que tiene la función de mediar entre el core y los posibles fronts que vayan a consumirnos (app, web, etc), y el forex-ms, que tiene la responsabilidad de buscar el precio unitario de conversión de una moneda con respecto a otra. 
-
-Actualmente, como está en versión de prueba, solo cuenta con 3 casos de uso:
-
-1- Obtener conversión de entre dos monedas.
+1- Obtener el balance actual de una billetera.
 
 ![alt text](diagrams/us1.png)
 
-2- Obtener el balance actual de una billetera.
+2- Obtener conversión de entre dos monedas.
 
 ![alt text](diagrams/us2.png)
 
@@ -53,12 +57,18 @@ Actualmente, como está en versión de prueba, solo cuenta con 3 casos de uso:
 
 ![alt text](diagrams/us3.png)
 
-Actualmente tenemos un bug reportado, pues al parecer, cada vez que le pegan al BFF para intentar realizar un movimiento de alguna moneda hacia otra, este arroja un error 500 y no sabemos bien por qué es. Nuestra primera tarea es identificar el problema e intentar resolverlo agregando logs a discreción.
+Dicho sistema consta de dos componentes, el exchange-bff, que tiene la función de mediar entre el core y los posibles fronts que vayan a consumirnos (app, web, etc), y el forex-ms, que tiene la responsabilidad de buscar el precio unitario de conversión de una moneda con respecto a otra. 
 
-En el caso de que alguna de las dos monedas no existan en nuestra base, se está lanzando un error 500, lo cual, podría no estar del todo bien. Esta tarea consiste en solucionar este problema, al mismo tiempo que vamos agregando logs que nos puedan ayudar a detectar dónde está el inconveniente.
+![alt text](diagrams/arch.png)
 
-A tener en cuenta:
+### Objetivos:
+1. Al intentar los dos últimos casos de uso (consultar conversión entre dos monedas y convertirlas dentro de nuestra billetera), está arrojándose un error 500 (Internal Server Error). Debemos diagnosticar que puede estar pasando y darle solución
 
-* Cada log debe tener un nivel coherente con su contexto.
-* Se tendrá en cuenta la consistencia de los logs (ej, no loguear en distintos idiomas con formatos distintos).
+2. Agregar logs necesarios y suficientes para facilitar dicho diagnóstico, teniendo en cuanta que cada log debe cumplir con los sigts requisitos:
 
+* Deben tener un nivel apropiado según su contexto
+* Deben poder responder las preguntas What? When? Where? Who?
+
+Documentación útil
+* https://es.quarkus.io/guides/logging
+* https://docs.nestjs.com/techniques/logger
