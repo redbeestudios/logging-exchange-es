@@ -14,7 +14,6 @@ export class Wallet {
         const fromNewBalance = this.balance.get(conversion.conversionAmount.from) - conversion.conversionAmount.amount
         this.balance.set(conversion.conversionAmount.to, toNewBalance)
         this.balance.set(conversion.conversionAmount.from, fromNewBalance)
-
         return this
     }
 }

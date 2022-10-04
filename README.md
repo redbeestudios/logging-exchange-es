@@ -43,7 +43,7 @@ docker-compose down -v
 
 ## Misión
 
-Tenemos un sistema que en teoría nos permitiría conocer el balance de nuestra billetera electrónica, convertir de una moneda a otra (BTC, ETH, USD, LTC, BEE, ADA) y realizar un movimiento dentro la misma billetera (BTC -> ETH, USD -> ETH, etc):
+Tenemos un sistema que en teoría nos permitiría conocer el balance de nuestra billetera electrónica, convertir de una moneda a otra (BTC, ETH, USD, LTC, BEE, ADA) y realizar un movimiento dentro de la misma billetera (BTC -> ETH, USD -> ETH, etc):
 
 1- Obtener el balance actual de una billetera.
 
