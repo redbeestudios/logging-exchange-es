@@ -19,7 +19,5 @@ class ForexController(
         @QueryParam("to") to: String
     ) =
         currencyService
-            .also { this.logger.info("Trying to convert from: $from, to: $to") }
             .getCurrencies(from, to)
-            .also { this.logger.info("Conversion: $it") }
 }

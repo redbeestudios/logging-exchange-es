@@ -1,5 +1,6 @@
 import io.vertx.core.http.HttpServerRequest
 import io.vertx.core.http.HttpServerResponse
+import org.jboss.logging.Logger
 import org.slf4j.MDC
 import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ContainerRequestFilter
@@ -17,15 +18,20 @@ class HttpInterceptor : ContainerRequestFilter, ContainerResponseFilter {
     lateinit var response: HttpServerResponse
 
     override fun filter(requestContext: ContainerRequestContext?) {
-        MDC.put(USER_HEADER, request.getHeader(USER_HEADER)!!)
+        val userHeader = request.getHeader(USER_HEADER)
+        if (userHeader == null) {
+            MDC.put(USER_HEADER, ANONYMOUS_USER)
+        } else {
+            MDC.put(USER_HEADER, request.getHeader(USER_HEADER))
+        }
     }
 
     override fun filter(requestContext: ContainerRequestContext?, responseContext: ContainerResponseContext?) {
-        response.putHeader(USER_HEADER, MDC.get(USER_HEADER)!!)
         MDC.clear()
     }
 
     companion object {
         const val USER_HEADER: String = "user"
+        const val ANONYMOUS_USER: String = "anonymous trader"
     }
 }
