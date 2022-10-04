@@ -1,9 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpAdapterHost, HttpException, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as moment from 'moment';
 
 @Catch()
 export class ErrorHandlerFilter<T> implements ExceptionFilter {
+  private readonly logger: Logger = new Logger(ErrorHandlerFilter.name)
 
   catch(exception: T, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
